@@ -1,45 +1,47 @@
-# UserManagement — Simple User Management with SDK, DAL, and Web API
+# UserManagement — Simple SDK and Web API (updated)
 
 Short summary (VI):
 
-- Đây là một project demo gồm 3 dịch vụ/assembly chính:
-  - `UserMgmt.Sdk` — HTTP SDK
-  - `UserMgmt.Dal` — simple DAL HTTP service (runs on port 3000)
-  - `UserMgmt.Api` — Web API that consumes the SDK client (runs on port 5000)
+- This project have two main parts:
+  - `UserMgmt.Sdk` — HTTP SDK client that calls external data sources
+  - `UserMgmt.Api` — Web API that consumes the SDK client
 
-Why this layout
+**Why**
 
-- Demonstrates an internal SDK client (`IUserMgmtClient`) injected into `UserMgmt.Api` and a separate mock SDK HTTP server that exposes the same endpoints.
+- Demonstrates an SDK client injected into the Web API and how to map external JSON APIs into local DTOs.
 
-Quick run (in three terminals)
+**Quick Run**
+
+- **Restore & build:**
 
 ```bash
 dotnet restore
 dotnet build
+```
 
-# DAL server (mock HTTP server)
-dotnet run --project src/UserMgmt.Dal/UserMgmt.Dal.csproj
+- **Run Web API:**
 
-# Web API (uses SDK client)
+```bash
 dotnet run --project src/UserMgmt.Api/UserMgmt.Api.csproj
 ```
 
-Endpoints
+The API listens on `https://localhost:44394` by default (see [src/UserMgmt.Api/Program.cs](src/UserMgmt.Api/Program.cs)).
 
-- DAL server:
-  - GET http://localhost:3000/api/Users
-  - GET http://localhost:3000/api/Users/{name}
+**Endpoints**
 
-- Web API (forwards to SDK via injected client):
-  - GET http://localhost:5000/api/Employees
-  - GET http://localhost:5000/api/Employees/{name}
+- **GET** `https://localhost:44394/api/v1/users`
+- **GET** `https://localhost:44394/api/v1/products`
 
-Notes about `BaseUrl` and DI
+**Notes about DI / BaseAddress**
 
-- The SDK client is registered via `AddUserMgmtSdk(string baseUrl)` implemented in [src/UserMgmt.Sdk/Extensions/ServiceCollectionExtensions.cs](src/UserMgmt.Sdk/Extensions/ServiceCollectionExtensions.cs).
-- `UserMgmt.Api` sets the SDK base URL when registering the client in [src/UserMgmt.Api/Program.cs](src/UserMgmt.Api/Program.cs):
+- The SDK client is registered via `AddUserMgmtSdk(string baseUrl)` in [src/UserMgmt.Sdk/Extensions/ServiceCollectionExtensions.cs](src/UserMgmt.Sdk/Extensions/ServiceCollectionExtensions.cs).
+- `UserMgmt.Api` currently configures the SDK base URL to `https://dummyjson.com/` in [src/UserMgmt.Api/Program.cs](src/UserMgmt.Api/Program.cs), so the SDK calls `users` and `products` paths relative to that base address.
 
-```csharp
-// example in Program.cs
-builder.Services.AddUserMgmtSdk("http://localhost:3000");
-```
+**Models**
+
+- **User DTOs:** see [src/UserMgmt.Sdk/Models/UserDto.cs](src/UserMgmt.Sdk/Models/UserDto.cs) — includes nested types (`AddressDto`, `HairDto`, `BankDto`, `CompanyDto`, `CryptoDto`, ...).
+- **Product DTOs:** see [src/UserMgmt.Sdk/Models/ProductDto.cs](src/UserMgmt.Sdk/Models/ProductDto.cs) and [src/UserMgmt.Sdk/Models/ProductsResponse.cs](src/UserMgmt.Sdk/Models/ProductsResponse.cs) — includes `ProductFullDto`, `ReviewDto`, `MetaDto`, etc.
+
+**Behavior**
+
+- The SDK deserializes wrapper responses from the external APIs (`{ users: [...], total, skip, limit }` and `{ products: [...], total, skip, limit }`) into `UsersResponse` / `ProductsResponse` and returns the inner collections.
