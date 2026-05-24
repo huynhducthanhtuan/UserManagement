@@ -22,10 +22,10 @@ dotnet build
 - **Run Web API:**
 
 ```bash
-dotnet run --project src/UserMgmt.Api/UserMgmt.Api.csproj
+dotnet run --project UserMgmt.Api/UserMgmt.Api.csproj
 ```
 
-The API listens on `https://localhost:44394` by default (see [src/UserMgmt.Api/Program.cs](src/UserMgmt.Api/Program.cs)).
+The API listens on `https://localhost:44394` by default (see [UserMgmt.Api/Program.cs](UserMgmt.Api/Program.cs)).
 
 **Endpoints**
 
@@ -34,13 +34,8 @@ The API listens on `https://localhost:44394` by default (see [src/UserMgmt.Api/P
 
 **Notes about DI / BaseAddress**
 
-- The SDK client is registered via `AddUserMgmtSdk(string baseUrl)` in [src/UserMgmt.Sdk/Extensions/ServiceCollectionExtensions.cs](src/UserMgmt.Sdk/Extensions/ServiceCollectionExtensions.cs).
-- `UserMgmt.Api` currently configures the SDK base URL to `https://dummyjson.com/` in [src/UserMgmt.Api/Program.cs](src/UserMgmt.Api/Program.cs), so the SDK calls `users` and `products` paths relative to that base address.
-
-**Models**
-
-- **User DTOs:** see [src/UserMgmt.Sdk/Models/UserDto.cs](src/UserMgmt.Sdk/Models/UserDto.cs) — includes nested types (`AddressDto`, `HairDto`, `BankDto`, `CompanyDto`, `CryptoDto`, ...).
-- **Product DTOs:** see [src/UserMgmt.Sdk/Models/ProductDto.cs](src/UserMgmt.Sdk/Models/ProductDto.cs) and [src/UserMgmt.Sdk/Models/ProductsResponse.cs](src/UserMgmt.Sdk/Models/ProductsResponse.cs) — includes `ProductFullDto`, `ReviewDto`, `MetaDto`, etc.
+- The SDK client is registered via `AddUserMgmtSdk(string baseUrl)` in [UserMgmt.Sdk/Extensions/ServiceCollectionExtensions.cs](UserMgmt.Sdk/Extensions/ServiceCollectionExtensions.cs).
+- `UserMgmt.Api` currently configures the SDK base URL to `https://dummyjson.com/` in [UserMgmt.Api/Program.cs](UserMgmt.Api/Program.cs), so the SDK calls `users` and `products` paths relative to that base address.
 
 **Behavior**
 
